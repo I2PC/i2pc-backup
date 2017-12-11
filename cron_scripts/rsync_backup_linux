@@ -1,6 +1,6 @@
 #!/bin/bash
-VERSION=2.0
-# 
+set -e -u -o pipefail
+
 # CREDITS
 # Original from: http://www.mikerubel.org/computers/rsync_snapshots/
 # Customized by Jesus Cuenca
@@ -57,13 +57,14 @@ unset PATH
 
 # Global variables
 
+VERSION=2.0
 
 # If SKIP_BACKUP equals 1, the backup of the data is not performed
 SKIP_BACKUP=0
 
 # Location of system programs (like cp, mktemp...)
 BIN_DIR=/usr/bin
-if [ "a$RSB_CWD" == "a" ]
+if ! [ "${RSB_CWD:-}" ]
 then
         WORKING_DIR=/etc/cron_scripts
 else
@@ -103,8 +104,6 @@ then
 	# UPDATE_NAME=rsync_backup
 fi
 
-
-
 cd $WORKING_DIR
 
 # This script needs the following programs
@@ -128,6 +127,7 @@ MKTEMP=$BIN_DIR3/mktemp
 AWK=$BIN_DIR2/awk
 TAIL=$BIN_DIR2/tail
 CRONTAB=$BIN_DIR2/crontab
+TEE=$BIN_DIR2/tee
 
 UPDATE_NAME=`$BASENAME $0`
 
@@ -215,7 +215,6 @@ get_update_servers(){
 		
 }
 
-
 get_from_update_servers(){
 	FILE=$1
 	DEST="."
@@ -223,6 +222,8 @@ get_from_update_servers(){
 	then
 		DEST=$2
 	fi
+
+	echo_log "get_from_update_servers: $FILE -> $DEST"
 
 	if [ ! -f $UPDATE_SERVERS_FILE ]
 	then
@@ -232,8 +233,8 @@ get_from_update_servers(){
 
 	for S in `$CAT  $UPDATE_SERVERS_FILE`
 	do
-		$RSYNC -a --timeout 10 $S::$UPDATE_MODULE/$FILE $DEST  >> $LOG_FILE 2>&1
-		if [ $? -eq 0 ]
+		echo_log $RSYNC -a --timeout 10 $S::$UPDATE_MODULE/$FILE $DEST
+		if $RSYNC -a --timeout 10 $S::$UPDATE_MODULE/$FILE $DEST  >> $LOG_FILE 2>&1
 		then
 			return 0
 		fi
@@ -256,8 +257,9 @@ update(){
 	then
 		echo_log Checking for updates... 
 		get_update_servers
-		update_server_key
-		ERROR=`$EXPR $ERROR + $?`
+		local update_status=0
+		update_server_key || update_status=$?
+		ERROR=`$EXPR $ERROR + $update_status`
 		
 		LAST_CRC=($($MD5SUM $UPDATE_NAME))
 		get_from_update_servers $UPDATE_NAME $UPDATE_NAME.new
@@ -342,8 +344,7 @@ check_configuration_files(){
 		then
 			# Migrate from old config format
 			# If it's missing the /cygdrive in path, add it
-			$GREP cygdrive $WHAT_CFG
-			if [ $? -ne 0 ]
+			if $GREP cygdrive $WHAT_CFG
 			then
 				WHAT=`$SED -e s_^_/cygdrive/_g < $WHAT_CFG | $SED -e s_\ _\ /cygdrive/_g`
 			else
@@ -363,8 +364,7 @@ check_configuration_files(){
 		fi
 	else
 		# Check if it's old format
-		$GREP RSYNC $BACKUP_CONFIG > /dev/null
-		if [ $? -eq 0 ]
+		if $GREP RSYNC $BACKUP_CONFIG > /dev/null
 		then
 			# Convert to new format, making a backup
 			$CP $BACKUP_CONFIG $BACKUP_CONFIG.old
@@ -423,8 +423,10 @@ backup(){
 		    # In Unix it's important to keep ownership & permissions, so it's better -a than -rt
 		    # -z might fail with big files in FAT filesystems. Additionally, it offers no gain with compressed files
 		    # !!!! offer -z as an option (for the cases where it really helps)
-		    $RSYNC -a -e "${BIN_DIR2}/ssh -o StrictHostKeyChecking=no" --delete --delete-excluded $SNAP_PARAMS $WHAT $REMOTE_USER@$SERVER::$REMOTE_MODULE &> /tmp/rsync_backup.log.tmp
-		    local rsync_status=$?
+		    local rsync_status=0
+		    $RSYNC -a -e "${BIN_DIR2}/ssh -o StrictHostKeyChecking=no" --delete --delete-excluded \
+		    	$SNAP_PARAMS $WHAT $REMOTE_USER@$SERVER::$REMOTE_MODULE &> /tmp/rsync_backup.log.tmp || rsync_status=$?
+
 		    $GREP -v non-regular /tmp/rsync_backup.log.tmp >> $LOG_FILE
 		    echo_log "$($DATE +"%s %F %T") - Done(${rsync_status}) ${WHAT}->${SERVER}::${REMOTE_MODULE}"
 		    [ ${rsync_status} -ne 0 ] && (( total_errors++ ))
@@ -443,7 +445,7 @@ backup(){
 host_of_module(){
 	REMOTE_MODULE=$1
 		SERVER=`$GREP "^$REMOTE_MODULE " $BACKUP_HOSTS | $AWK '{print $2}'`
-		if [ "a$SERVER" == "a" ]
+		if ! [ "${SERVER:-}" ]
 		then
 			SERVER=disco
 		fi
@@ -461,7 +463,7 @@ sync_log(){
 }
 
 echo_log(){
-	echo $* >> $LOG_FILE
+	echo $* | $TEE -a /dev/tty >> $LOG_FILE
 }
 syntax(){
 	echo Syntax: $0 [COMMAND]
@@ -471,7 +473,6 @@ syntax(){
 }
 
 ############## Main
-
 
 echo_log $0 version $VERSION started. `$DATE`. 
 
@@ -495,11 +496,9 @@ then
 fi
 
 check_configuration_files
-update
-if [ $? -eq 0 ]
+if update
 then
 	# The script was not updated
 	backup
 	sync_log
 fi
-# echo Exit $$
