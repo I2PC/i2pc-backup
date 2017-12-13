@@ -6,7 +6,7 @@ repo_branch="test-arnau"
 emails_on_error="cnb.notifications@gmail.com"
 script_dir=$(cd "$(dirname "$0")" && pwd -P)
 config_name_path="$script_dir/sysconfig"
-config_dir="$script_dir/config"
+repo_dir="$script_dir/config"
 remote_user_path="$script_dir/ruser"
 remote_password_path="$script_dir/pass"
 log_file="/var/log/rsync_backup.log"
@@ -34,8 +34,9 @@ update_config() { local repo_url=$1 destination=$2
 backup_to_module() { local rsync_module=$1 paths=$2
 	local destination remote_host
 	local remote_user=$(cat $remote_user_path 2>/dev/null || echo "root")
-	remote_host=$(cat "$config_dir/backup-hosts" | awk "\$1 == \"$rsync_module\"" | awk '{print $2}' | grep -m1 "." ||
-			echo "$default_backup_host")
+	remote_host=$(cat "$repo_dir/configs/backup-hosts" | base64 --decode |
+			awk "\$1 == \"$rsync_module\"" | awk '{print $2}' | grep -m1 "." ||
+				echo "$default_backup_host")
 	destination="$remote_user@$remote_host::$rsync_module"
 	debug "Rsync destination: $destination"
 	debug "Backup contents: $paths"
@@ -48,7 +49,7 @@ update_crontab() { local cron_path=$1
 }
 
 get_from_update_server() { local path=$1
-	local update_servers_path="$config_dir/update_servers"
+	local update_servers_path="$repo_dir/configs/update_servers"
 	test -e "$update_servers_path" || die "Update servers file not found: $update_servers_path"
 	for host in $(cat "$update_servers_path"); do
 		debug "Get update file: $host:$path"
@@ -59,7 +60,7 @@ get_from_update_server() { local path=$1
 }
 
 get_latest_script_version() {
-	local latest_script="$config_dir/cron_scripts/rsync_backup_linux"
+	local latest_script="$repo_dir/cron_scripts/rsync_backup_linux"
 	if test -e "$latest_script" && test "$(md5sum < "$latest_script")" != "$(md5sum < "$replace_script_path")"; then
 		debug "New script version, replace old one"
 		exec "$latest_script" replace_old #</dev/null >/dev/null 2>/dev/null
@@ -72,14 +73,14 @@ backup() { local cmd=${1:-}
 	local config_name
 	test -e $config_name_path || die "File not found: $config_name_path"
 
-	update_config "$repo_url" "$config_dir"
+	update_config "$repo_url" "$repo_dir"
 	test "$cmd" != "no-script-update" && get_latest_script_version
 
 	config_name=$(cat "$config_name_path")
-	test -d "$config_dir/configs/$config_name" || die "Config not found: $config_name"
-	update_crontab "$config_dir/configs/$config_name/cron"
+	test -d "$repo_dir/configs/$config_name" || die "Config not found: $config_name"
+	update_crontab "$repo_dir/configs/$config_name/cron"
 
-	cat "$config_dir/configs/$config_name/backup" | while read rsync_module frequency paths; do
+	cat "$repo_dir/configs/$config_name/backup" | while read rsync_module frequency paths; do
 		# frequency: days. Ignored for now
 		debug "Backup: module=$rsync_module, frequency=$frequency, paths=\"$paths\""
 		backup_to_module "$rsync_module" "$paths $log_file"
@@ -101,8 +102,8 @@ notify_on_error() {
 		sendemail_auth=$(get_from_update_server "sendemail.auth")
 		read gmail_address gmail_password < "$sendemail_auth"
 		debug "Send email: $emails_on_error"
-		#sendEmail -u "[i2pc-backup] Error: $HOSTNAME" -s "smtp.gmail.com:587" -o "tls=yes" -xu "$gmail_address" \
-		#  -xp "$gmail_password" -f "$gmail_address" -m "$output" -t "$emails_on_error"
+		sendEmail -u "[i2pc-backup] Error: $HOSTNAME" -s "smtp.gmail.com:587" -o "tls=yes" -xu "$gmail_address" \
+		  -xp "$gmail_password" -f "$gmail_address" -m "$output" -t "$emails_on_error"
 	fi
 	set -e
 	return "$retcode"
