@@ -117,7 +117,8 @@ replace_old() {
 	debug "Copy script: $current_script -> $replace_script_path"
 	cp "$current_script" "$replace_script_path"
 	chmod 755 "$replace_script_path"
-	exec "$replace_script_path" # </dev/null >/dev/null 2>/dev/null
+	debug "Exec new script: $replace_script_path"
+	exec "$replace_script_path" </dev/null >/dev/null 2>/dev/null
 }
 
 main() {
