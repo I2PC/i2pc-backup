@@ -62,7 +62,9 @@ get_latest_script_version() {
 	local latest_script="$config_dir/cron_scripts/rsync_backup_linux"
 	if test -e "$latest_script" && test "$(md5sum < "$latest_script")" != "$(md5sum < "$replace_script_path")"; then
 		debug "New script version, replace old one"
-		exec "$latest_script" replace_old </dev/null >/dev/null 2>/dev/null
+		exec "$latest_script" replace_old #</dev/null >/dev/null 2>/dev/null
+	else
+		debug "Script up-to-date: $replace_script_path"
 	fi
 }
 
@@ -98,8 +100,9 @@ notify_on_error() {
 	if ! test "$retcode" -eq 0; then
 		sendemail_auth=$(get_from_update_server "sendemail.auth")
 		read gmail_address gmail_password < "$sendemail_auth"
-		sendEmail -u "[i2pc-backup] Error: $HOSTNAME" -s "smtp.gmail.com:587" -o "tls=yes" -xu "$gmail_address" \
-		  -xp "$gmail_password" -f "$gmail_address" -m "$output" -t "$emails_on_error"
+		debug "Send email: $emails_on_error"
+		#sendEmail -u "[i2pc-backup] Error: $HOSTNAME" -s "smtp.gmail.com:587" -o "tls=yes" -xu "$gmail_address" \
+		#  -xp "$gmail_password" -f "$gmail_address" -m "$output" -t "$emails_on_error"
 	fi
 	set -e
 	return "$retcode"
@@ -113,6 +116,7 @@ replace_old() {
 	current_script="$script_dir/$(basename $0)"
 	debug "Copy script: $current_script -> $replace_script_path"
 	cp "$current_script" "$replace_script_path"
+	chmod 755 "$replace_script_path"
 	exec "$replace_script_path" # </dev/null >/dev/null 2>/dev/null
 }
 
