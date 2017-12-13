@@ -1,0 +1,4 @@
+darwin /etc /var /bin /lib /boot /initrd /initrd.img /opt /root /sbin /usr /var /vmlinuz
+carmen-darwin /home/carmen
+carmen-darwin/data2 /mnt/data2/carmen
+carmen-darwin/data2 /mnt/data2/exchange

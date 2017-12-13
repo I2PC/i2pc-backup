@@ -1,0 +1,5 @@
+adrian-glassfishprod 1 /home/aquintana
+jrmacias-glassfishprod 1 /home/das3dem
+glassfishprod 1 /home/glassfish
+jrmacias-glassfishprod 1 /home/das3dem
+gfprodos 1 /bin /boot /etc /initrd.img /lib /opt /root /sbin /usr /var /vmlinuz
