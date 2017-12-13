@@ -110,10 +110,10 @@ log() { local log_file=$1; shift 1
 }
 
 replace_old() {
-	current_script="$script_dir/$0"
+	current_script="$script_dir/$(basename $0)"
 	debug "Copy script: $current_script -> $replace_script_path"
 	cp "$current_script" "$replace_script_path"
-	exec "$replace_script_path" </dev/null >/dev/null 2>/dev/null
+	exec "$replace_script_path" # </dev/null >/dev/null 2>/dev/null
 }
 
 main() {
