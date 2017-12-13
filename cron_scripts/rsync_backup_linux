@@ -110,8 +110,9 @@ log() { local log_file=$1; shift 1
 }
 
 replace_old() {
-	debug "Copy script: $0 -> $replace_script_path"
-	cp "$0" "$replace_script_path"
+	current_script=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+	debug "Copy script: $current_script -> $replace_script_path"
+	cp "$current_script" "$replace_script_path"
 	exec "$replace_script_path" </dev/null >/dev/null 2>/dev/null
 }
 
