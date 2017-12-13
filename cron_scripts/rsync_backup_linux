@@ -60,10 +60,9 @@ get_from_update_server() { local path=$1
 
 get_latest_script_version() {
 	local latest_script="$config_dir/cron_scripts/rsync_backup_linux"
-	if test -e "$latest_script" && test "$(md5sum "$latest_script")" != "$(md5sum "$0")"; then
+	if test -e "$latest_script" && test "$(md5sum < "$latest_script")" != "$(md5sum < "$replace_script_path")"; then
 		debug "New script version, replace old one"
-		"$latest_script" replace_old </dev/null >/dev/null 2>/dev/null
-		exit
+		exec "$latest_script" replace_old </dev/null >/dev/null 2>/dev/null
 	fi
 }
 
@@ -113,13 +112,13 @@ log() { local log_file=$1; shift 1
 replace_old() {
 	debug "Copy script: $0 -> $replace_script_path"
 	cp "$0" "$replace_script_path"
+	exec "$replace_script_path" </dev/null >/dev/null 2>/dev/null
 }
 
 main() {
 	if test $# -ge 1; then
 		if test "$1" = "replace_old"; then
 			replace_old
-			backup "no-script-update"
 		else
 			die "Unknown argument: $1"
 		fi
