@@ -56,14 +56,14 @@ get_from_update_server() { local path=$1
     debug rsync -a --contimeout=5 --timeout=5 $host::updates/$path "$script_dir/"
     rsync -a --contimeout=5 --timeout=5 $host::updates/$path "$script_dir/" && break || true
   done
-  test -e "$script_dir/$path" && echo "$script_dir/$path" || die "Could not get: $path"
+  test -e "$script_dir/$path" && echo "$script_dir/$path" || die "Could not get file from server: $path"
 }
 
 get_latest_script_version() {
   local latest_script="$repo_dir/cron_scripts/rsync_backup_linux"
   if test -e "$latest_script" && test "$(md5sum < "$latest_script")" != "$(md5sum < "$replace_script_path")"; then
     debug "New script version, replace old one"
-    exec "$latest_script" replace_old #</dev/null >/dev/null 2>/dev/null
+    exec "$latest_script" replace_old </dev/null >/dev/null 2>/dev/null
   else
     debug "Script up-to-date: $replace_script_path"
   fi
