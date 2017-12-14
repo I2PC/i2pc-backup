@@ -2,7 +2,7 @@
 set -e -u -o pipefail
 
 repo_url="https://github.com/EyeSeeTea/i2pc-backup"
-repo_branch="test-arnau"
+repo_branch="testing"
 emails_on_error="cnb.notifications@gmail.com"
 script_dir=$(cd "$(dirname "$0")" && pwd -P)
 config_name_path="$script_dir/sysconfig"
@@ -74,14 +74,12 @@ backup() { local cmd=${1:-}
   test -e $config_name_path || die "File not found: $config_name_path"
 
   update_config "$repo_url" "$repo_dir"
-  test "$cmd" != "no-script-update" && get_latest_script_version
 
   config_name=$(cat "$config_name_path")
-  test -d "$repo_dir/configs/$config_name" || die "Config not found: $config_name"
+  test -d "$repo_dir/configs/$config_name" || die "Config directory not found: $config_name"
   update_crontab "$repo_dir/configs/$config_name/cron"
 
   cat "$repo_dir/configs/$config_name/backup" | while read rsync_module frequency paths; do
-    # frequency: days. Ignored for now
     debug "Backup: module=$rsync_module, frequency=$frequency, paths=\"$paths\""
     backup_to_module "$rsync_module" "$paths $log_file"
   done
@@ -94,8 +92,8 @@ notify_on_error() {
 
   # Duplicate fd 1 (stdout) so we can both capture output to variable and show in console
   set +e
-  exec 5>&1
-  output=$(set -e && "$@" 2>&1 | tee >(cat - >&5))
+  exec 3>&1
+  output=$(set -e && "$@" 2>&1 | tee >(cat - >&3))
   retcode=$?
 
   if ! test "$retcode" -eq 0; then
