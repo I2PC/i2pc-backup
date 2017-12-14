@@ -74,6 +74,7 @@ backup() { local cmd=${1:-}
   test -e $config_name_path || die "File not found: $config_name_path"
 
   update_config "$repo_url" "$repo_dir"
+  get_latest_script_version
 
   config_name=$(cat "$config_name_path")
   test -d "$repo_dir/configs/$config_name" || die "Config directory not found: $config_name"
