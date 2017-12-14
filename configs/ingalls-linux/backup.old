@@ -1,0 +1,2 @@
+ingalls /etc /var /bin /lib /boot /initrd /initrd.img /opt /root /sbin /usr /var /vmlinuz
+ingalls-web /home/lamp /home/mysqlbackup

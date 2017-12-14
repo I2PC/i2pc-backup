@@ -1,0 +1,5 @@
+clark3 1 /etc /var /bin /lib* /boot /initrd.img /opt /root /sbin /usr /var /vmlinuz
+ana-clark3 1 /home/ana
+carmen-clark3 1 /home/carmen
+roberto-clark3 1 /home/roberto
+tomo-clark3 1 /home/tomo.local

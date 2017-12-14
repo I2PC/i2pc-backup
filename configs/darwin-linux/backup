@@ -1,0 +1,5 @@
+darwin 1 /etc /var /bin /lib /boot /initrd /initrd.img /opt /root /sbin /usr /var /vmlinuz
+carmen-darwin 1 /home/carmen
+carmen-usb 1 /mnt/usb
+carmen-darwin 1 /home/carmen
+carmen-darwin/data2  1 /mnt/data2/exchange

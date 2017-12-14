@@ -1,0 +1,2 @@
+heisenberg 1 /bin /boot /etc /initrd.img /lib /lib64 /opt /root /sbin /usr /var /vmlinuz
+ftp-work 1 /nas/work/ftp

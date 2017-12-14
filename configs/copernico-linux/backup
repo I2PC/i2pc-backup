@@ -1,0 +1,4 @@
+copernico 1 /bin /boot /etc /initrd.img /lib /lib32 /lib64 /opt /root /sbin /usr /var /vmlinuz
+shabih-work 1 /nas/work/shabih
+coss-work 1 /nas/work/coss
+rsanchez-work 1 /nas/work/rsanchez/
