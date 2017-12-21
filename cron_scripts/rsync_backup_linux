@@ -41,7 +41,7 @@ backup_to_module() { local rsync_module=$1 paths=$2
   debug "Backup contents: $paths"
   debug "Rsync destination: $destination"
   RSYNC_PASSWORD=$(cat $remote_password_path 2>/dev/null || true) rsync \
-    -e 'ssh -o StrictHostKeyChecking=no' --archive --ignore-missing-args --delete --delete-excluded \
+    -e 'ssh -o StrictHostKeyChecking=no' --archive --delete --delete-excluded \ 1884G
     $paths $destination
 }
 
