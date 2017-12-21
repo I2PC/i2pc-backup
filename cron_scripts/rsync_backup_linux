@@ -38,10 +38,11 @@ backup_to_module() { local rsync_module=$1 paths=$2
       awk "\$1 == \"$rsync_module\"" | awk '{print $2}' | grep -m1 "." ||
         echo "$default_backup_host")
   destination="$remote_user@$remote_host::$rsync_module"
-  debug "Rsync destination: $destination"
   debug "Backup contents: $paths"
+  debug "Rsync destination: $destination"
   RSYNC_PASSWORD=$(cat $remote_password_path 2>/dev/null || true) \
-    rsync -e 'ssh -o StrictHostKeyChecking=no' -a --delete --delete-excluded $paths $destination
+    rsync -e 'ssh -o StrictHostKeyChecking=no' -a--ignore-missing-args --delete --delete-excluded \
+    $paths $destination
 }
 
 update_crontab() { local cron_path=$1
