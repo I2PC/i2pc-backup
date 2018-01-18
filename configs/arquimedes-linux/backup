@@ -1,1 +1,2 @@
-arquimedes 1 /bin /boot /etc /initrd.img /lib /lib64 /opt /root /sbin /usr /var /vmlinuz /home
+arquimedes 1 /bin /boot /etc /initrd.img /lib /lib64 /opt /root /sbin /usr /var /vmlinuz
+arquimedes-home 1 /home

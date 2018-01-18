@@ -12,6 +12,7 @@ remote_password_path="$script_dir/pass"
 log_file="/var/log/rsync_backup.log"
 replace_script_path="/etc/cron_scripts/rsync_backup_linux"
 default_backup_host="disco.cnb.csic.es"
+option_no_update=
 
 stderr() { echo -e "$@" >&2; }
 
@@ -24,7 +25,7 @@ update_config() { local repo_url=$1 destination=$2
   if test -d "$destination"; then
     debug "The repository exists, pull latest changes"
     cd "$destination"
-    git checkout $repo_branch && git pull --force
+    git checkout $repo_branch && git fetch && git reset --hard origin/$repo_branch
   else
     debug "Cloning repository"
     git clone -b "$repo_branch" "https://github.com/EyeSeeTea/i2pc-backup" "$destination"
@@ -83,8 +84,10 @@ backup() { local cmd=${1:-}
   local config_name
   test -e $config_name_path || die "File not found: $config_name_path"
 
-  update_config "$repo_url" "$repo_dir"
-  get_latest_script_version
+  if test -z "$option_no_update"; then
+    update_config "$repo_url" "$repo_dir"
+    get_latest_script_version
+  fi
 
   config_name=$(cat "$config_name_path")
   test -d "$repo_dir/configs/$config_name" || die "Config directory not found: $config_name"
@@ -132,6 +135,18 @@ replace_old() {
 }
 
 main() {
+  local options
+  options=$(getopt -o "n" --long "no-update" -n 'rsync_backup_linux' -- "$@")
+  eval set -- "$options" || exit 1
+
+  while true; do
+    case "$1" in
+      -n|--no-update) option_no_update=1; shift;;
+      --) shift; break;;
+      *) die "Unknown option: $1";;
+    esac
+  done
+
   if test $# -ge 1; then
     if test "$1" = "replace_old"; then
       replace_old
