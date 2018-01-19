@@ -51,12 +51,11 @@ backup_to_module() { local rsync_module=$1 paths=$2
   debug "Backup contents: $paths"
   debug "Rsync destination: $destination"
   RSYNC_PASSWORD=$(cat $remote_password_path 2>/dev/null || true) safe_rsync \
-    -e 'ssh -o StrictHostKeyChecking=no' --archive --delete --delete-excluded \
-    $paths $destination
+    --archive --delete --delete-excluded $paths $destination
 }
 
 update_crontab() { local cron_path=$1
-  crontab -l | { grep -v "rsync_backup" || true; } | cat - "$cron_path" | crontab -
+  crontab -l | { grep -v "rsync_backup" || true; } | cat - "$cron_path" | crontab - 
 }
 
 get_from_update_server() { local path=$1
