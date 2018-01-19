@@ -56,7 +56,7 @@ backup_to_module() { local rsync_module=$1 paths=$2
 }
 
 update_crontab() { local cron_path=$1
-  crontab -l | grep -v "rsync_backup" | cat - "$cron_path" | crontab -
+  crontab -l | { grep -v "rsync_backup" || true; } | cat - "$cron_path" | crontab -
 }
 
 get_from_update_server() { local path=$1
