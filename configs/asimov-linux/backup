@@ -5,5 +5,5 @@ asimov 1 /bin /lib /services /usr /boot /etc /lib64 /opt /root /sbin /srv /var
 #instruct-asimov 1 /home/instruct
 #coss-asimov 1 /home/coss
 #rmelero-asimov 1 /mnt/big1/rmelero
-#joton-asimov 1 /mnt/big2/joton
-#jsegura-asimov1 1 /mnt/big2/jsegura
+joton-asimov 1 /mnt/big2/joton
+jsegura-asimov1 1 /mnt/big2/jsegura
