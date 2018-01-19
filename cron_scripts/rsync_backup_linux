@@ -12,6 +12,7 @@ remote_password_path="$script_dir/pass"
 log_file="/var/log/rsync_backup.log"
 replace_script_path="/etc/cron_scripts/rsync_backup_linux"
 default_backup_host="disco.cnb.csic.es"
+email_server_url="http://arquimedes:1396"
 option_no_update=
 
 stderr() { echo -e "$@" >&2; }
@@ -100,6 +101,11 @@ backup() { local cmd=${1:-}
   debug "Done"
 }
 
+send_notification() { local subject=$1 body=$2
+  debug "Send email: $subject"
+  curl -sS -X POST "$email_server_url" -F subject="$subject" -F body="$body" > /dev/null
+}
+
 notify_on_error() {
   local output retcode gmail_address gmail_password
 
@@ -109,12 +115,10 @@ notify_on_error() {
   output=$(set -e && "$@" 2>&1 | tee >(cat - >&3))
   retcode=$?
 
-  if ! test "$retcode" -eq 0; then
-    sendemail_auth=$(get_from_update_server "sendemail.auth")
-    read gmail_address gmail_password < "$sendemail_auth"
-    debug "Send email: $emails_on_error"
-    sendEmail -u "[i2pc-backup] Error: $HOSTNAME" -s "smtp.gmail.com:587" -o "tls=yes" -xu "$gmail_address" \
-      -xp "$gmail_password" -f "$gmail_address" -m "$output" -t "$emails_on_error"
+  if test "$retcode" -eq 0; then
+    send_notification "[$HOSTNAME] success" "$output"
+  else
+    send_notification "[$HOSTNAME] error" "$output"
   fi
   set -e
   return "$retcode"
