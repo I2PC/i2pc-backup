@@ -104,7 +104,7 @@ backup() { local cmd=${1:-}
 
 send_notification() { local subject=$1 body=$2
   debug "Send email: $subject"
-  wget -q "$email_server_url" --post-data "$subject;$body"
+  wget -q "$email_server_url" --post-data "[i2pc-backup] $subject;$body"
 }
 
 notify_on_error() {
@@ -117,9 +117,9 @@ notify_on_error() {
   retcode=$?
 
   if test "$retcode" -eq 0; then
-    send_notification "[$HOSTNAME] success" "$output"
+    send_notification "$HOSTNAME - success" "$output"
   else
-    send_notification "[$HOSTNAME] error" "$output"
+    send_notification "$HOSTNAME - error" "$output"
   fi
   set -e
   return "$retcode"
