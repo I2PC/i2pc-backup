@@ -103,7 +103,7 @@ backup() { local cmd=${1:-}
 
 send_notification() { local subject=$1 body=$2
   debug "Send email: $subject"
-  wget "$email_server_url" --post-data "$subject;$body"
+  wget -q "$email_server_url" --post-data "$subject;$body"
 }
 
 notify_on_error() {
