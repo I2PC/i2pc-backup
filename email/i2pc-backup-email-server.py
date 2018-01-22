@@ -1,12 +1,12 @@
 #!/usr/bin/python
 """
-Simple HTTP server to be used as an internal, non-authorized notification gateway. Example in client:
+Simple HTTP server to be used as an internal, non-authorized notification email gateway.
 
-Using multipart:
+Using multipart with curl:
 
-  $ curl -X POST http://localhost:1396/ -F subject="[host] ok" -F body="line1\nline2\nline3"
+  $ curl -X POST http://localhost:1396/ -F subject="SUBJECT" -F body="BODY"
 
-Using postdata:
+Using postdata with wget:
 
   $ wget http://localhost:1396/ --post-data "SUBJECT;BODY"
 """
@@ -70,7 +70,7 @@ def getHandler(email, password, recipients):
                 json_response(self, dict(status="ok"))
             except Exception as exc:
                 traceback.print_exc()
-                json_response(self, dict(status="error", message=str(exc)), status=301)
+                json_response(self, dict(status="error", message=str(exc)), status=400)
     return EmailHandler
 
 def run_server(recipients, bindaddr="", port=8000):
