@@ -38,6 +38,7 @@ safe_rsync() {
     # rsync status codes to be considered successful:
     #   23: Partial transfer due to error: when files are excluded in server,
     local successful_retcodes="0 23"
+    debug "Run: rsync $@"
     rsync "$@" || retcode=$?
     echo "$successful_retcodes" | grep -q -w "$retcode" || return $retcode
 }
