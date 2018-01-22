@@ -103,7 +103,7 @@ backup() { local cmd=${1:-}
 
 send_notification() { local subject=$1 body=$2
   debug "Send email: $subject"
-  curl -sS -X POST "$email_server_url" -F subject="[i2pc-backup] $subject" -F body="$body" > /dev/null
+  wget "$email_server_url" --post-data "$subject;$body"
 }
 
 notify_on_error() {
