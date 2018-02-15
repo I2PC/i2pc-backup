@@ -1,6 +1,2 @@
-<<<<<<< HEAD
 campins 1 /bin /boot /etc /initrd.img /lib* /opt /root /sbin /usr /var /vmlinuz /services
-=======
-campins 1 /bin /boot /etc /initrd.img /lib* /opt /root /sbin /usr /var /vmlinuz
 campins-home 1 /home
->>>>>>> 2963905ceb972198ca293587898ac8eb0a3e27b1
