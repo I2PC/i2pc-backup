@@ -1,8 +1,14 @@
 #!/usr/bin/python
 """
-Simple HTTP server to be used as an internal, non-authorized notification gateway. Example in client:
+Simple HTTP server to be used as an internal, non-authorized notification email gateway.
 
-  $ curl -X POST http://server:1396/path -F subject="[host] ok" -F body="line1\nline2\nline3"
+Using multipart with curl:
+
+  $ curl -X POST http://localhost:1396/ -F subject="SUBJECT" -F body="BODY"
+
+Using postdata with wget:
+
+  $ wget http://localhost:1396/ --post-data "SUBJECT;BODY"
 """
 import cgi
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -35,7 +41,10 @@ def send_email(sender_email, sender_pass, recipients, subject, body, smtp_server
 def parse_form_params(request):
     ctype, pdict = cgi.parse_header(request.headers["content-type"])
     if ctype != "multipart/form-data":
-        raise ValueError("No multipart request")
+        length = int(request.headers['content-length'])
+        field_data = request.rfile.read(length)
+        subject, body = field_data.decode("utf-8").split(";", 1)
+        return dict(subject=subject, body=body)
     else:
         pdict_bytes = dict(pdict, boundary=bytes(pdict["boundary"], "utf-8"))
         params_bytes = cgi.parse_multipart(request.rfile, pdict_bytes)
@@ -61,7 +70,7 @@ def getHandler(email, password, recipients):
                 json_response(self, dict(status="ok"))
             except Exception as exc:
                 traceback.print_exc()
-                json_response(self, dict(status="error", message=str(exc)), status=301)
+                json_response(self, dict(status="error", message=str(exc)), status=400)
     return EmailHandler
 
 def run_server(recipients, bindaddr="", port=8000):
