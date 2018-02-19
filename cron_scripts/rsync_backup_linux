@@ -142,6 +142,15 @@ replace_old() {
   exec "$replace_script_path" </dev/null >/dev/null 2>/dev/null
 }
 
+install_package() {
+  local name
+  mkdir -p /etc/cron_scripts
+  install -m 755 cron_scripts/rsync_backup_linux /etc/cron_scripts/
+  read -p "Insert your machine config name (i.e. arquimedes-linux): " name
+  echo "$name" | head -n1 > /etc/cron_scripts/sysconfig
+  echo "Done"
+}
+
 main() {
   local options
   options=$(getopt -o "n" --long "no-update" -n 'rsync_backup_linux' -- "$@")
@@ -158,6 +167,8 @@ main() {
   if test $# -ge 1; then
     if test "$1" = "replace_old"; then
       replace_old
+    elif test "$1" = "install"; then
+      install_package
     else
       die "Unknown argument: $1"
     fi

@@ -6,7 +6,9 @@ Distributed auto-updatable backup infrastructure.
 
 ### Debian-based distros:
 
+```
 $ sudo apt-get install git wget rsync
+```
 
 ### Windows
 
