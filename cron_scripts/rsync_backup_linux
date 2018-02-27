@@ -90,8 +90,12 @@ backup() { local cmd=${1:-}
 }
 
 send_notification() { local subject=$1 body=$2
+  local datafile
   debug "Send email: $subject"
-  wget -q "$email_server_url" --post-data "[i2pc-backup] $subject;$body"
+  datafile=$(mktemp)
+  echo "[i2pc-backup] $subject;$body" > "$datafile"
+  wget -q "$email_server_url" --post-file "$datafile"
+  rm "$datafile"
 }
 
 notify_on_error() {
