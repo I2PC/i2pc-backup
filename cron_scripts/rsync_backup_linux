@@ -7,11 +7,8 @@ emails_on_error="cnb.notifications@gmail.com"
 script_dir=$(cd "$(dirname "$0")" && pwd -P)
 config_name_path="$script_dir/sysconfig"
 repo_dir="$script_dir/config"
-remote_user_path="$script_dir/ruser"
-remote_password_path="$script_dir/pass"
 log_file="/var/log/rsync_backup.log"
 replace_script_path="/etc/cron_scripts/rsync_backup_linux"
-default_backup_host="disco.cnb.csic.es"
 email_server_url="http://arquimedes:1396"
 option_no_update=
 
@@ -45,15 +42,12 @@ safe_rsync() {
 
 backup_to_module() { local rsync_module=$1 paths=$2
   local destination remote_host
-  local remote_user=$(cat $remote_user_path 2>/dev/null || echo "root")
   remote_host=$(cat "$repo_dir/configs/backup-hosts" | base64 --decode |
-      awk "\$1 == \"$rsync_module\"" | awk '{print $2}' | grep -m1 "." ||
-        echo "$default_backup_host")
-  destination="$remote_user@$remote_host::$rsync_module"
+      awk "\$1 == \"$rsync_module\"" | awk '{print $2}' | grep -m1 ".")
+  destination="$remote_host::$rsync_module"
   debug "Backup contents: $paths"
   debug "Rsync destination: $destination"
-  RSYNC_PASSWORD=$(cat $remote_password_path 2>/dev/null || true) safe_rsync \
-    --archive --delete --delete-excluded $paths $destination
+  safe_rsync --archive --delete --delete-excluded $paths $destination
 }
 
 update_crontab() { local cron_path=$1
