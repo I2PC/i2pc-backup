@@ -106,9 +106,7 @@ You will need to install the script and the `sysconfig` file:
 
 ```
 $ git clone https://github.com/EyeSeeTea/i2pc-backup
-$ sudo mkdir -p /etc/cron_scripts
-$ sudo install -m755 i2pc-backup/cron_scripts/rsync_backup_linux /etc/cron_scripts/
-$ sudo echo "HOST-linux" > /etc/cron_scripts/sysconfig
+$ sudo i2pc-backup/cron_scripts/rsync_backup_linux install
 ```
 
 Make sure you have also entries for `configs/HOST-linux` and `configs/backup-hosts`.

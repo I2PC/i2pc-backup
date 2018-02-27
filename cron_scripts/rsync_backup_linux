@@ -144,8 +144,8 @@ replace_old() {
 
 install_package() {
   local name
-  mkdir -p /etc/cron_scripts
-  install -m 755 cron_scripts/rsync_backup_linux /etc/cron_scripts/
+  mkdir -p "/etc/cron_scripts"
+  install -m 755 $script_dir/rsync_backup_linux /etc/cron_scripts/
   read -p "Insert your machine config name (i.e. arquimedes-linux): " name
   echo "$name" | head -n1 > /etc/cron_scripts/sysconfig
   echo "Done"
