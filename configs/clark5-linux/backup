@@ -1,4 +1,3 @@
 clark5 /bin /boot /etc /initrd.img /lib /lib64 /root /sbin /usr /var /vmlinuz
-appion-clark5 1 /home/appion
 roberto-clark5 1 /home/roberto
 carmen-clark5 0 /home/carmen /mnt/big/carmen/datos5
