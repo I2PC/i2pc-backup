@@ -64,17 +64,6 @@ update_crontab() { local cron_path=$1
     crontab -
 }
 
-get_from_update_server() { local path=$1
-  local update_servers_path="$repo_dir/configs/update_servers"
-  test -e "$update_servers_path" || die "Update servers file not found: $update_servers_path"
-  for host in $(cat "$update_servers_path"); do
-    debug "Get update file: $host:$path"
-    debug rsync -a --contimeout=5 --timeout=5 $host::updates/$path "$script_dir/"
-    rsync -a --contimeout=5 --timeout=5 $host::updates/$path "$script_dir/" && break || true
-  done
-  test -e "$script_dir/$path" && echo "$script_dir/$path" || die "Could not get file from server: $path"
-}
-
 get_latest_script_version() {
   local latest_script="$repo_dir/cron_scripts/rsync_backup_linux"
   if test -e "$latest_script" && test "$(md5sum < "$latest_script")" != "$(md5sum < "$replace_script_path")"; then
@@ -145,9 +134,9 @@ replace_old() {
 install_package() {
   local name
   mkdir -p "/etc/cron_scripts"
-  install -m 755 $script_dir/rsync_backup_linux /etc/cron_scripts/
+  install -m 755 $script_dir/rsync_backup* /etc/cron_scripts/
   read -p "Insert your machine config name (i.e. arquimedes-linux): " name
-  echo "$name" | head -n1 > /etc/cron_scripts/sysconfig
+  echo "$name" | head -n1 > "/etc/cron_scripts/sysconfig"
   echo "Done"
 }
 
