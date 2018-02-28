@@ -43,7 +43,8 @@ safe_rsync() {
 backup_to_module() { local rsync_module=$1 paths=$2
   local destination remote_host
   remote_host=$(cat "$repo_dir/configs/backup-hosts" | base64 --decode |
-      awk "\$1 == \"$rsync_module\"" | awk '{print $2}' | grep -m1 ".")
+      awk "\$1 == \"$rsync_module\"" | awk '{print $2}' | grep -m1 "." || true)
+  test -z "$remote_host" && die "Rsync module not found: $rsync_module"
   destination="$remote_host::$rsync_module"
   debug "Backup contents: $paths"
   debug "Rsync destination: $destination"
