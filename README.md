@@ -35,6 +35,8 @@ Reenter: SOMEPASSWORD
 ... no problem found.
 ```
 
+Note: Password must correspond to the Services GUI -> Properties -> Logon.
+
 You may also add cygwin to the path: System Properties -> Advanced -> Environment Variables -> Path -> Add "c:\cygwin64\bin"
 
 Run the "Services" GUI windows app to check that the "Cron daemon" task is running.
