@@ -22,7 +22,7 @@ Now install dependencies of the script running CMD (Command Prompt):
 > setup-x86_64.exe -q -P git,wget,rsync,cron,cygrunsrv
 ```
 
-Now open a Cygwin terminal with administrative rights and run the wizard script `cron-config`:
+Now open a Cygwin terminal with administrative rights (right-click on icon -> _Run as administrator_) and execute the pre-installed script `cron-config`:
 
 ```
 $ cron-config
