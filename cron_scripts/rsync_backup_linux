@@ -102,7 +102,7 @@ send_notification() { local subject=$1 body=$2
 }
 
 notify_on_error() {
-  local output retcode gmail_address gmail_password
+  local output retcode
 
   # Duplicate fd 1 (stdout) so we can both capture output to variable and show in console
   set +e
