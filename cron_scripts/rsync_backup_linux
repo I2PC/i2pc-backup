@@ -97,7 +97,7 @@ send_notification() { local subject=$1 body=$2
   debug "Send email: $subject"
   datafile=$(mktemp)
   echo "[i2pc-backup] $subject;$body" > "$datafile"
-  wget -q "$email_server_url" --post-file "$datafile"
+  wget -O /dev/null -q "$email_server_url" --post-file "$datafile"
   rm "$datafile"
 }
 
