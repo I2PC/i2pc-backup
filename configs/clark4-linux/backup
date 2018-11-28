@@ -1,4 +1,0 @@
-clark4 1 /etc /var /bin /lib* /boot /initrd.img /opt /root /sbin /usr /var /vmlinuz
-carmen-clark4 0 /home/carmen
-roberto-clark4 1 /home/roberto
-coss-clark4 1 /home/coss
