@@ -1,3 +1,3 @@
-coss-oort-fat1  1 /media/FAT1/
-coss-oort-fat2 1 /media/FAT2/
-coss-oort-usbdisk  1 /media/usbdisk/
+#coss-oort-fat1  1 /media/coss/FAT1/
+coss-oort-fat2 1 /media/coss/FAT2/
+coss-oort-usbdisk  1 /media/coss/usbdisk/
