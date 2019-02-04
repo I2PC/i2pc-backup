@@ -24,5 +24,21 @@
 - */Local Settings/Application Data/Spotify
 - */Application Data/Spotify
 - Temp
+- Downloads
 - */.local/share/Trash
 - Google Gears for Firefox
+- /dev
+- /proc
+- /sys
+- /tmp
+- /run
+- /mnt
+- /media
+- /lost+found
+- /cdrom
+- /home/*/.thumbnails
+- /home/*/.cache
+- /home/*/.mozilla/firefox/*.default/Cache
+- /home/*/.mozilla/firefox/*.default/OfflineCache
+- /home/*/.local/share/Trash
+- /home/*/.gvfs/
