@@ -36,9 +36,8 @@
 - /media
 - /lost+found
 - /cdrom
-- /home/*/.thumbnails
-- /home/*/.cache
-- /home/*/.mozilla/firefox/*.default/Cache
-- /home/*/.mozilla/firefox/*.default/OfflineCache
-- /home/*/.local/share/Trash
-- /home/*/.gvfs/
+- */.thumbnails
+- */.cache
+- */.mozilla/firefox/*.default/Cache
+- */.mozilla/firefox/*.default/OfflineCache
+- */.gvfs/
