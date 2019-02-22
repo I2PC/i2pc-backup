@@ -112,3 +112,5 @@ $ sudo i2pc-backup/cron_scripts/rsync_backup_linux install
 ```
 
 Make sure you have also entries for `configs/HOST-linux` and `configs/backup-hosts`.
+
+To finish the installation you must execute /etc/cron_scripts/rsync_backup_linux at least once so that the cronjob is configured correctly.
