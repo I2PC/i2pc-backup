@@ -1,2 +1,2 @@
 carver 1 /bin /lib /usr  /vmlinuz /boot  /etc  /initrd.img  /lib64 /opt /root /sbin /srv /var /snap
-carver-users 1 /home /data
+carver-data_users 1 /home /data
