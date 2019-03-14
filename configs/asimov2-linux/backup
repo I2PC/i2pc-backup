@@ -1,7 +1,6 @@
 asimov2 1 /bin /lib /usr /boot  /etc  /lib64 /opt /root /sbin /srv /var
-instruct-asimov2 1 /home/instruct 
-joton-asimov2 1 /home/joton 
-coss-asimov2 1 /home/coss 
-rmelero-asimov2 1 /home/rmelero 
+#instruct-asimov2 1 /home/instruct
+#joton-asimov2 1 /home/joton
+coss-asimov2 1 /home/coss
+rmelero-asimov2 1 /home/rmelero
 jsegura-asimov2 1 /home/jsegura
-mkazemi-asimov2 1 /home/mkazemi

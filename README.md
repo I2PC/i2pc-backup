@@ -2,12 +2,44 @@
 
 Distributed auto-updatable backup infrastructure.
 
-## Dependencies:
+## Dependencies
 
-- bash
-- ssh
-- rsync
-- [sendmail](http://caspian.dotconf.net/menu/Software/SendEmail/)
+### Debian-based distros:
+
+```
+$ sudo apt-get install git wget rsync
+```
+
+### Windows
+
+Download and install a base Cygwin system: https://www.cygwin.com/install.html
+
+Important: Some mirrors contain old packages. In our tests, _mirrors.kernel.org_ worked well.
+
+Now install dependencies of the script running CMD (Command Prompt):
+
+```
+> setup-x86_64.exe -q -P git,wget,rsync,cron,cygrunsrv
+```
+
+Now open a Cygwin terminal with administrative rights (right-click on icon -> _Run as administrator_) and execute the pre-installed script `cron-config`:
+
+```
+$ cron-config
+Do you want to install the cron daemon as a service? (yes/no) yes
+Enter the value of CYGWIN for the daemon: [ ] ntsec
+Do you want the cron daemon to run as yourself? (yes/no) no
+are you using the cyglsa package ? (yes/no) no
+Please enter the password for user 'cyg_server': SOMEPASSWORD
+Reenter: SOMEPASSWORD
+... no problem found.
+```
+
+Note: Password must correspond to the Services GUI -> Properties -> Logon.
+
+You may also add cygwin to the path: System Properties -> Advanced -> Environment Variables -> Path -> Add "c:\cygwin64\bin"
+
+Run the "Services" GUI windows app to check that the "Cron daemon" task is running.
 
 ## How it works
 
@@ -76,9 +108,9 @@ You will need to install the script and the `sysconfig` file:
 
 ```
 $ git clone https://github.com/EyeSeeTea/i2pc-backup
-$ mkdir -p /etc/cron_scripts
-$ install -m755 i2pc-backup/cron_scripts/rsync_backup_linux /etc/cron_scripts/
-$ echo "HOST-linux" > /etc/cron_scripts/sysconfig
+$ sudo i2pc-backup/cron_scripts/rsync_backup_linux install
 ```
 
 Make sure you have also entries for `configs/HOST-linux` and `configs/backup-hosts`.
+
+To finish the installation you must execute /etc/cron_scripts/rsync_backup_linux at least once so that the cronjob is configured correctly.

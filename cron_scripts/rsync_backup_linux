@@ -2,16 +2,15 @@
 set -e -u -o pipefail
 
 repo_url="https://github.com/EyeSeeTea/i2pc-backup"
-repo_branch="testing"
+repo_branch="master"
 emails_on_error="cnb.notifications@gmail.com"
 script_dir=$(cd "$(dirname "$0")" && pwd -P)
 config_name_path="$script_dir/sysconfig"
 repo_dir="$script_dir/config"
-remote_user_path="$script_dir/ruser"
-remote_password_path="$script_dir/pass"
 log_file="/var/log/rsync_backup.log"
 replace_script_path="/etc/cron_scripts/rsync_backup_linux"
-default_backup_host="disco.cnb.csic.es"
+email_server_url="http://arquimedes:1396"
+option_no_update=
 
 stderr() { echo -e "$@" >&2; }
 
@@ -24,39 +23,42 @@ update_config() { local repo_url=$1 destination=$2
   if test -d "$destination"; then
     debug "The repository exists, pull latest changes"
     cd "$destination"
-    git checkout $repo_branch && git pull --force
+    git checkout $repo_branch && git fetch && git reset --hard origin/$repo_branch
   else
     debug "Cloning repository"
     git clone -b "$repo_branch" "https://github.com/EyeSeeTea/i2pc-backup" "$destination"
   fi
 }
 
+safe_rsync() { local paths=$1 destination=$2
+    local retcode=0
+    # rsync status codes to be considered successful:
+    #   23: Partial transfer due to error: when files are excluded in server,
+    local successful_retcodes="0 23 24"
+    cmd="rsync --protect-args --archive --delete --delete-excluded $paths $destination" 
+    debug "Run: $cmd" |
+    echo "$cmd" | bash || retcode=$?
+    debug "Rsync retcode: $retcode"
+    echo "$successful_retcodes" | grep -q -w "$retcode" || return $retcode
+}
+
 backup_to_module() { local rsync_module=$1 paths=$2
   local destination remote_host
-  local remote_user=$(cat $remote_user_path 2>/dev/null || echo "root")
   remote_host=$(cat "$repo_dir/configs/backup-hosts" | base64 --decode |
-      awk "\$1 == \"$rsync_module\"" | awk '{print $2}' | grep -m1 "." ||
-        echo "$default_backup_host")
-  destination="$remote_user@$remote_host::$rsync_module"
-  debug "Rsync destination: $destination"
+      awk "\$1 == \"$rsync_module\"" | awk '{print $2}' | grep -m1 "." || true)
+  test -z "$remote_host" && die "Rsync module not found: $rsync_module"
+  destination="$remote_host::$rsync_module"
   debug "Backup contents: $paths"
-  RSYNC_PASSWORD=$(cat $remote_password_path 2>/dev/null || true) \
-    rsync -e 'ssh -o StrictHostKeyChecking=no' -a --delete --delete-excluded $paths $destination
+  debug "Rsync destination: $destination"
+  safe_rsync "$paths" "$destination"
 }
 
 update_crontab() { local cron_path=$1
-  crontab -l | grep -v "rsync_backup" | cat - "$cron_path" | crontab -
-}
-
-get_from_update_server() { local path=$1
-  local update_servers_path="$repo_dir/configs/update_servers"
-  test -e "$update_servers_path" || die "Update servers file not found: $update_servers_path"
-  for host in $(cat "$update_servers_path"); do
-    debug "Get update file: $host:$path"
-    debug rsync -a --contimeout=5 --timeout=5 $host::updates/$path "$script_dir/"
-    rsync -a --contimeout=5 --timeout=5 $host::updates/$path "$script_dir/" && break || true
-  done
-  test -e "$script_dir/$path" && echo "$script_dir/$path" || die "Could not get file from server: $path"
+  { crontab -l || true; } |
+    { grep -v "rsync_backup" || true; } |
+    { grep -v "^#" || true; } |
+    cat - "$cron_path" |
+    crontab -
 }
 
 get_latest_script_version() {
@@ -73,14 +75,16 @@ backup() { local cmd=${1:-}
   local config_name
   test -e $config_name_path || die "File not found: $config_name_path"
 
-  update_config "$repo_url" "$repo_dir"
-  get_latest_script_version
+  if test -z "$option_no_update"; then
+    update_config "$repo_url" "$repo_dir"
+    get_latest_script_version
+  fi
 
   config_name=$(cat "$config_name_path")
   test -d "$repo_dir/configs/$config_name" || die "Config directory not found: $config_name"
   update_crontab "$repo_dir/configs/$config_name/cron"
 
-  cat "$repo_dir/configs/$config_name/backup" | while read rsync_module frequency paths; do
+  cat "$repo_dir/configs/$config_name/backup" | grep -v "^#" | while read rsync_module frequency paths; do
     debug "Backup: module=$rsync_module, frequency=$frequency, paths=\"$paths\""
     backup_to_module "$rsync_module" "$paths $log_file"
   done
@@ -88,8 +92,17 @@ backup() { local cmd=${1:-}
   debug "Done"
 }
 
+send_notification() { local subject=$1 body=$2
+  local datafile
+  debug "Send email: $subject"
+  datafile=$(mktemp)
+  echo "[i2pc-backup] $subject;$body" > "$datafile"
+  wget -O /dev/null -q "$email_server_url" --post-file "$datafile"
+  rm "$datafile"
+}
+
 notify_on_error() {
-  local output retcode gmail_address gmail_password
+  local output retcode
 
   # Duplicate fd 1 (stdout) so we can both capture output to variable and show in console
   set +e
@@ -97,12 +110,10 @@ notify_on_error() {
   output=$(set -e && "$@" 2>&1 | tee >(cat - >&3))
   retcode=$?
 
-  if ! test "$retcode" -eq 0; then
-    sendemail_auth=$(get_from_update_server "sendemail.auth")
-    read gmail_address gmail_password < "$sendemail_auth"
-    debug "Send email: $emails_on_error"
-    sendEmail -u "[i2pc-backup] Error: $HOSTNAME" -s "smtp.gmail.com:587" -o "tls=yes" -xu "$gmail_address" \
-      -xp "$gmail_password" -f "$gmail_address" -m "$output" -t "$emails_on_error"
+  if test "$retcode" -eq 0; then
+    send_notification "$HOSTNAME - success" "$output"
+  else
+    send_notification "$HOSTNAME - error" "$output"
   fi
   set -e
   return "$retcode"
@@ -121,10 +132,33 @@ replace_old() {
   exec "$replace_script_path" </dev/null >/dev/null 2>/dev/null
 }
 
+install_package() {
+  local name
+  mkdir -p "/etc/cron_scripts"
+  install -m 755 $script_dir/rsync_backup* /etc/cron_scripts/
+  read -p "Insert your machine config name (i.e. arquimedes-linux): " name
+  echo "$name" | head -n1 > "/etc/cron_scripts/sysconfig"
+  echo "Done"
+}
+
 main() {
+  local options
+  options=$(getopt -o "n" --long "no-update" -n 'rsync_backup_linux' -- "$@")
+  eval set -- "$options" || exit 1
+
+  while true; do
+    case "$1" in
+      -n|--no-update) option_no_update=1; shift;;
+      --) shift; break;;
+      *) die "Unknown option: $1";;
+    esac
+  done
+
   if test $# -ge 1; then
     if test "$1" = "replace_old"; then
       replace_old
+    elif test "$1" = "install"; then
+      install_package
     else
       die "Unknown argument: $1"
     fi

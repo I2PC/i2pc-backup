@@ -1,0 +1,43 @@
+- *.mp3
+- *.MP3
+- *.wma
+- *.mkv
+- *.iso
+- *.ISO
+- *.vmem
+- *.part
+- *.cf1
+- *.tmp
+- *swapfile
+- *.gho
+- *.vob
+- *.ghs
+- *.vmdk
+- *.vdi
+- *.IE5
+- *.avi
+- *.AVI
+- */Local Settings/Temporary Internet Files
+- */Local Settings/Temp
+- */Configuraci*/Datos de programa/Spotify
+- */Datos de programa/Spotify
+- */Local Settings/Application Data/Spotify
+- */Application Data/Spotify
+- Temp
+- Downloads
+- */.local/share/Trash
+- Google Gears for Firefox
+- /dev
+- /proc
+- /sys
+- /tmp
+- /run
+- /mnt
+- /media
+- /lost+found
+- /cdrom
+- */.thumbnails
+- */.cache
+- */.mozilla/firefox/*.default/Cache
+- */.mozilla/firefox/*.default/OfflineCache
+- */.gvfs/

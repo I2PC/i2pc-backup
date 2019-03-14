@@ -1,0 +1,1 @@
+10 22  * * * /etc/cron_scripts/rsync_backup_linux

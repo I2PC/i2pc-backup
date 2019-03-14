@@ -1,0 +1,11 @@
+#!/bin/bash
+# Show when is each backup scheduled, ordered by hour
+
+# cat */cron | sort -nk 2
+(for d in `ls`
+do
+	if [ -f $d/cron ]
+	then
+		echo "`cat $d/cron | cut -c 1-21`" $d
+	fi
+done) | sort -k 2

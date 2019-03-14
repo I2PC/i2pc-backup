@@ -1,9 +1,13 @@
-asimov 1 /bin /lib /services  /usr  /vmlinuz /boot  /etc  /initrd.img  /lib64 /opt /root /sbin /srv /var
-roberto-asimov 1 /mnt/big2/roberto 
-scipion-asimov 1 /home/scipion 
-jvargas-asimov 1 /mnt/big2/jvargas 
-instruct-asimov 1 /home/instruct 
-coss-asimov 1 /home/coss 
-rmelero-asimov 1 /mnt/big1/rmelero 
-joton-asimov 1 /mnt/big2/joton 
-jsegura-asimov1 1 /mnt/big2/jsegura
+asimov 1 /bin /lib /services /usr /boot /etc /lib64 /opt /root /sbin /srv /var
+roberto-asimov 1 /mnt/big2/roberto
+scipion-asimov 1 /home/scipion
+instruct-asimov 1 /home/instruct
+coss-asimov 1 /home/coss
+rmelero-asimov 1 /mnt/big1/rmelero
+jsegura-asimov 1 /mnt/big2/jsegura
+dmaluenda-asimov 1 /home/dmaluenda
+jamotga-asimov 1 /home/jamotga
+ldelcano-asimov 1 /home/ldelcano
+marta-asimov 1 /home/marta
+rsanchez-asimov 1 /home/rsanchez
+scipionweb-asimov 1 /mnt/big1/scipion-service/data/scipionweb 

@@ -1,0 +1,2 @@
+campins 1 /bin /boot /etc /initrd.img /lib* /opt /root /sbin /usr /var /vmlinuz /services
+campins-home 1 /home

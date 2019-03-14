@@ -1,4 +1,1 @@
-mediawiki-hilbert 1 /home/mediawiki /home/mediawiki_SBM
-conventions-hilbert 1 /home/conventions
-hilbert 1 /bin /boot /etc /initrd.img /lib /lib32 /lib64 /opt /root /sbin /usr /var /vmlinuz
-jdelpozo-hilbert 1 /home/jdelpozo
+hilbert 1 /bin /lib /usr /boot /etc /lib64 /opt /root /sbin /srv /var
