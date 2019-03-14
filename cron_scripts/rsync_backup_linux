@@ -2,7 +2,7 @@
 set -e -u -o pipefail
 
 repo_url="https://github.com/EyeSeeTea/i2pc-backup"
-repo_branch="testing"
+repo_branch="master"
 emails_on_error="cnb.notifications@gmail.com"
 script_dir=$(cd "$(dirname "$0")" && pwd -P)
 config_name_path="$script_dir/sysconfig"
