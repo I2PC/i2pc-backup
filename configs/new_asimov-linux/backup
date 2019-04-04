@@ -1,0 +1,10 @@
+new_asimov 1 /bin /lib /services /usr /boot /etc /lib64 /opt /root /sbin /srv /var
+scipion-new_asimov 1 /home/scipion
+coss-new_asimov 1 /home/coss
+dmaluenda-new_asimov 1 /home/dmaluenda
+jamotga-new_asimov 1 /home/jamotga
+jsegura-new_asimov 1 /home/ldelcano
+marta-new_asimov 1 /home/marta
+rmelero-new_asimov 1 /home/rmelero
+rsanchez-new_asimov 1 /home/rsanchez
+scipion-service-new_asimov 1 /home/scipion-service
