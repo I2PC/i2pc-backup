@@ -4,3 +4,4 @@ asimov2 1 /bin /lib /usr /boot  /etc  /lib64 /opt /root /sbin /srv /var
 coss-asimov2 1 /home/coss
 rmelero-asimov2 1 /home/rmelero
 jsegura-asimov2 1 /home/jsegura
+acuervo-asimov2 1 /home/acuervo
