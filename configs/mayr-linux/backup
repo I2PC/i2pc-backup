@@ -1,0 +1,2 @@
+mayr 1 /bin /lib /services /usr /boot /etc /lib64 /opt /root /sbin /srv /var
+mayr-home 1 /home
