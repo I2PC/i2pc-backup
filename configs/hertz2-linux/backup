@@ -1,1 +1,5 @@
-hertz-dos 1 /bin /data /etc /lib /proc /run /scratch /sys /usr /boot /dev /home /lib64 /opt /root /sbin /srv /tmp /var
+hertz-dos 1 /bin /etc /lib /proc /run /scratch /sys /usr /boot /dev /lib64 /opt /root /sbin /srv /tmp /var
+coss-hertz-dos 1 /home/coss
+dstrelak-hertz-dos 1 /home/dstrelak
+ldelcano-hertz-dos 1 /home/ldelcano
+rsanchez-hertz-dos 1 /home/rsanchez
