@@ -1,1 +1,3 @@
-hertz 1 /bin /data /etc /lib /proc /run /scratch /sys /usr /boot /dev /home /lib64 /opt /root /sbin /srv /tmp /var
+hertz 1 /bin /etc /lib /proc /run /scratch /sys /usr /boot /dev /lib64 /opt /root /sbin /srv /tmp /var
+acuervo-hertz 1 /home/acuervo
+rsanchez-hertz 1 /home/rsanchez
