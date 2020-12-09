@@ -9,7 +9,7 @@ config_name_path="$script_dir/sysconfig"
 repo_dir="$script_dir/config"
 log_file="/var/log/rsync_backup.log"
 replace_script_path="/etc/cron_scripts/rsync_backup_linux"
-email_server_url="http://arquimedes:1396"
+email_server_url="http://heisenberg:1396"
 option_no_update=
 
 stderr() { echo -e "$@" >&2; }
