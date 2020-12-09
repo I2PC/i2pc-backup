@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cp $1 $1.old
+#cp $1 $1.old
 T=`mktemp`
 cat $1 | while read module directories
 do
